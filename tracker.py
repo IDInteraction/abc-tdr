@@ -1,14 +1,30 @@
 import numpy as np
 import cv2
+import argparse
+
+print "Starting"
+parser = argparse.ArgumentParser(description='Track an object given an initial bounding box and optional frameskip')
+parser.add_argument('--infile', dest = 'infile', type=str, action='store', required = True)
+parser.add_argument('--skipframe', dest = 'skipframe', type=int, action='store', default = 0)
+parser.add_argument('--bbox', type=str, dest='bboxstr', action='store', required = True) # Will split into tuple later
+parser.add_argument('--tracker', type=str, dest='tracker', action='store', default='MIL')
+
+args=parser.parse_args()
+
+print args
 
 cv2.namedWindow("tracking")
-camera = cv2.VideoCapture("E:/code/opencv/samples/data/768x576.avi")
-bbox = (638.0,230.0,56.0,101.0)
-tracker = cv2.Tracker_create("MIL")
+camera = cv2.VideoCapture(args.infile)
+bbox =tuple(map(int, args.bboxstr.split(',')))
+tracker = cv2.Tracker_create(args.tracker)
+
+camera.set(cv2.CAP_PROP_POS_FRAMES, args.skipframe)
+
 init_once = False
 
 while camera.isOpened():
     ok, image=camera.read()
+    frame = camera.get(cv2.CAP_PROP_POS_FRAMES)
     if not ok:
         print 'no image read'
         break
@@ -18,8 +34,8 @@ while camera.isOpened():
         init_once = True
 
     ok, newbox = tracker.update(image)
-    print ok, newbox
-
+    #print ok, newbox
+    print str(frame) + "," +  str(newbox[0]) + "," + str(newbox[1]) + "," + str(newbox[2]) + "," + str(newbox[3])
     if ok:
         p1 = (int(newbox[0]), int(newbox[1]))
         p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
