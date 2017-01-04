@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import argparse
 
-print "Starting"
+
 parser = argparse.ArgumentParser(description='Track an object given an initial bounding box and optional frameskip')
 parser.add_argument('--infile', dest = 'infile', type=str, action='store', required = True)
 parser.add_argument('--skipframe', dest = 'skipframe', type=int, action='store', default = 0)
@@ -11,7 +11,7 @@ parser.add_argument('--tracker', type=str, dest='tracker', action='store', defau
 
 args=parser.parse_args()
 
-print args
+
 
 cv2.namedWindow("tracking")
 camera = cv2.VideoCapture(args.infile)
@@ -26,7 +26,7 @@ while camera.isOpened():
     ok, image=camera.read()
     frame = camera.get(cv2.CAP_PROP_POS_FRAMES)
     if not ok:
-        print 'no image read'
+#        print 'no image read'
         break
 
     if not init_once:
