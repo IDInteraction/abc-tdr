@@ -8,12 +8,13 @@ parser.add_argument('--infile', dest = 'infile', type=str, action='store', requi
 parser.add_argument('--skipframe', dest = 'skipframe', type=int, action='store', default = 0)
 parser.add_argument('--bbox', type=str, dest='bboxstr', action='store', required = True) # Will split into tuple later
 parser.add_argument('--tracker', type=str, dest='tracker', action='store', default='MIL')
+parser.add_argument('--showvideo', dest='showvideo', action='store_true')
+parser.set_defaults(showvideo=False)
 
 args=parser.parse_args()
 
-
-
-cv2.namedWindow("tracking")
+if args.showvideo == True:
+    cv2.namedWindow("tracking")
 camera = cv2.VideoCapture(args.infile)
 bbox =tuple(map(int, args.bboxstr.split(',')))
 tracker = cv2.Tracker_create(args.tracker)
@@ -40,7 +41,7 @@ while camera.isOpened():
         p1 = (int(newbox[0]), int(newbox[1]))
         p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
         cv2.rectangle(image, p1, p2, (200,0,0))
-
-    cv2.imshow("tracking", image)
-    k = cv2.waitKey(1) & 0xff
-    if k == 27 : break # esc pressed
+    if args.showvideo == True:
+        cv2.imshow("tracking", image)
+        k = cv2.waitKey(1) & 0xff
+        if k == 27 : break # esc pressed
