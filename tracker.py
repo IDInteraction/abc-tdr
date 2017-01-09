@@ -5,7 +5,8 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Track an object given an initial bounding box and optional frameskip')
 parser.add_argument('--infile', dest = 'infile', type=str, action='store', required = True)
-parser.add_argument('--skipframe', dest = 'skipframe', type=int, action='store', default = 0)
+parser.add_argument('--skipframe', dest = 'skipframe', type=int, action='store')
+parser.add_argument('--skipms', dest = 'skipms', type=int, action='store')
 parser.add_argument('--bbox', type=str, dest='bboxstr', action='store', required = True) # Will split into tuple later
 parser.add_argument('--tracker', type=str, dest='tracker', action='store', default='MIL')
 parser.add_argument('--showvideo', dest='showvideo', action='store_true')
@@ -19,7 +20,15 @@ camera = cv2.VideoCapture(args.infile)
 bbox =tuple(map(int, args.bboxstr.split(',')))
 tracker = cv2.Tracker_create(args.tracker)
 
-camera.set(cv2.CAP_PROP_POS_FRAMES, args.skipframe)
+if(args.skipframe and args.skipms):
+    print("Cannot skip frames and time")
+    quit()
+
+if(args.skipframe):
+    camera.set(cv2.CAP_PROP_POS_FRAMES, args.skipframe)
+if(args.skipms):
+    camera.set(cv2.CAP_PROP_POS_MSEC, args.skipms)
+
 
 init_once = False
 
